@@ -12,12 +12,14 @@ const api = (function(){
 			'key': API_KEY,
 		};
 		$.getJSON(BASE_URL, data, function(response) {
+			console.log(response);
 			callback(decorateResponse(response));
 		});
 	};
 
 	const decorateResponse = function(response) {
-		return response.items.map(item => {
+		let pageTokens = [response.prevPageToken, response.nextPageToken];
+		let videos = response.items.map(item => {
 			let id = item.id.videoId;
 			let title = item.snippet.title;
 			let thumbnail = item.snippet.thumbnails.default.url;
@@ -31,6 +33,11 @@ const api = (function(){
 				channelTitle,
 			};
 		});
+
+		return {
+			videos,
+			pageTokens,
+		};
 	};
 
 	return {

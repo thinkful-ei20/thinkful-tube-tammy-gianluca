@@ -19,25 +19,51 @@ const videoList = (function(){
 		return items.join('');
 	};
 
+	const generatePageButtons = function(pageTokens){
+		let buttons = '';
+		if(pageTokens[0]) {
+			buttons += '<a class=\'page-button prev\'href=#>prev</a>';
+		}
+		if(pageTokens[1]) {
+			buttons += '<a class=\'page-button next\' href=#>next</a>';
+		}
+		return buttons;
+	};
+
 	const handleFormSubmit = function() {
 		$('form').submit(function(event){
 			event.preventDefault();
 			const searchTerm = $(event.currentTarget).find('#search-term');
-			api.fetchVideos(searchTerm.val(), function(response){
-				store.setVideos(response);
+			store.setSearchTerm = searchTerm.val();
+			api.fetchVideos(store.searchTerm, function(response){
+				store.setVideos(response.videos);
+				store.setPageTokens(response.pageTokens);
+				console.log(store.pageTokens);
 				render();
 			});
 		});
 	};
 
+	const handlePageScroll = function() {
+		$('.controls').on('click', '.page-button', function(event) {
+			const text = $(event.target).text();
+			api.fetchVideos()
+		});
+	};
+
 	const bindEventListeners = function() {
 		handleFormSubmit();
+		handlePageScroll();
 	};
 
 	const render = function(){
 		const items = store.videos;
+		const pageTokens = store.pageTokens;
 		const htmlString = generateVideoHtmlString(items);
+		const buttons = generatePageButtons(pageTokens);
+		console.log(buttons);
 		$('.results').html(htmlString);
+		$('.controls').html(buttons);
 	};
 
 	return {
