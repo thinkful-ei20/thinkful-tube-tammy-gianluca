@@ -49,13 +49,18 @@ const fetchVideos = function(searchTerm, callback) {
 // you get back the object you want.
 const decorateResponse = function(response) {
 	return response.items.map(item => {
+		console.log(item);
 		let id = item.id.videoId;
 		let title = item.snippet.title;
 		let thumbnail = item.snippet.thumbnails.default.url;
+		let channelId = item.snippet.channelId;
+		let channelTitle = item.snippet.channelTitle;
 		return {
-			id: id,
-			title: title,
+			id,
+			title,
 			thumbnail,
+			channelId,
+			channelTitle,
 		};
 	});
 };
@@ -68,16 +73,18 @@ const decorateResponse = function(response) {
 // TEST IT!
 const generateVideoItemHtml = function(item) {
 	console.log('generate html ran');
-	return `<li class = 'searchResults' id = '${item.id}'>
-      <p>${item.title}</p>
-      <img src = '${item.thumbnail}' alt = '${item.title}'>
-      </li>`;
+	return `
+	<li class='searchResults' id='${item.id}'>
+		<p>${item.title}</p>
+		<a href='https://www.youtube.com/watch?v=${item.id}'>
+			<img src='${item.thumbnail}' alt='${item.title}'>
+		</a>
+		<a href='https://www.youtube.com/channel/${item.channelId}'>${item.channelTitle}</a>
+    </li>`;
 };
 
 const generateVideoHtmlString = function (videos){
 	const items = videos.map((item) => generateVideoItemHtml(item));
-	console.log(videos);
-	console.log(items);
 	return items.join('');
 };
 // TASK:
@@ -97,6 +104,7 @@ const render = function() {
 	console.log('render ran');
 	let items = store.videos;
 	const htmlString = generateVideoHtmlString(items);
+	console.log(htmlString);
 	$('.results').html(htmlString);
 };
 
