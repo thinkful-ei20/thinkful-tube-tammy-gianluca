@@ -869,7 +869,7 @@ const fetchVideos = function(searchTerm, callback) {
   let data = 
     {'maxResults': '25',
       'part': 'snippet',
-      'q': 'dog',
+      'q': searchTerm,
       'key': API_KEY,
     };
   // decorated response
@@ -918,10 +918,22 @@ const decorateResponse = function(response) {
 // 1. Create a `generateVideoItemHtml` function that receives the decorated object
 // 2. Using the object, return an HTML string containing all the expected data
 // TEST IT!
-const generateVideoItemHtml = function(video) {
+const generateVideoItemHtml = function(item) {
+   console.log('generate html ran');
+  return `<li class = 'searchResults' id = '${item.id}'>
+      <p>${item.title}></p>
+      <img src = '${item.thumbnail}' alt = '${item.title}'>
+      </li>`;
+    
+  };
 
-};
-
+  const generateVideoHtmlString = function (videos){
+    const items = videos.map((item) => generateVideoItemHtml(item));
+    console.log(videos);
+    console.log(items);
+    return items.join('');
+    
+  }
 // TASK:
 // 1. Create a `addVideosToStore` function that receives an array of decorated video 
 // objects and sets the array as the value held in store.items
@@ -937,7 +949,10 @@ const addVideosToStore = function(response) {
 // 3. Add your array of DOM elements to the appropriate DOM element
 // TEST IT!
 const render = function() {
-
+  console.log('render ran');
+  let items = store.videos;
+  const htmlString = generateVideoHtmlString(items);
+  $('.results').html(htmlString);
 };
 
 // TASK:
@@ -960,7 +975,7 @@ const handleFormSubmit = function() {
     console.log(searchTerm.val());
     fetchVideos(searchTerm,function(response){
     addVideosToStore(response);
-     
+    render();
     });
   })
 
