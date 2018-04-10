@@ -5,14 +5,14 @@ const api = (function(){
 
 	const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
 
-	const fetchVideos = function(searchTerm) {
+	const fetchVideos = function(searchTerm, callback) {
 		let data = {'maxResults': '25',
 			'part': 'snippet',
 			'q': searchTerm,
 			'key': API_KEY,
 		};
 		$.getJSON(BASE_URL, data, function(response) {
-			return decorateResponse(response);
+			callback(decorateResponse(response));
 		});
 	};
 

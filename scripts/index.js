@@ -1,5 +1,3 @@
-'use strict'
-
 /* global videoList */
 
 // When DOM is ready:
