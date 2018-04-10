@@ -1,3 +1,5 @@
+'use strict'
+
 const API_KEY = 'AIzaSyAvFxw4hQ0lU1A53AlrPuFaegkd-RPIJcg';
 
 /*
@@ -26,17 +28,13 @@ const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
 // 3. Make a getJSON call using the query object and sending the provided callback in as the last argument
 // TEST IT! Execute this function and console log the results inside the callback.
 const fetchVideos = function(searchTerm, callback) {
-
-	let data =
-	{'maxResults': '25',
+	console.log('okay0');
+	let data = {'maxResults': '25',
 		'part': 'snippet',
 		'q': searchTerm,
 		'key': API_KEY,
 	};
-	// decorated response
-	// add decorated response to store
-	//re-render
-
+	console.log('okay1');
 	$.getJSON(BASE_URL, data, callback);
 };
 
@@ -71,10 +69,9 @@ const decorateResponse = function(response) {
 const generateVideoItemHtml = function(item) {
 	console.log('generate html ran');
 	return `<li class = 'searchResults' id = '${item.id}'>
-      <p>${item.title}></p>
+      <p>${item.title}</p>
       <img src = '${item.thumbnail}' alt = '${item.title}'>
       </li>`;
-
 };
 
 const generateVideoHtmlString = function (videos){
@@ -82,7 +79,6 @@ const generateVideoHtmlString = function (videos){
 	console.log(videos);
 	console.log(items);
 	return items.join('');
-
 };
 // TASK:
 // 1. Create a `addVideosToStore` function that receives an array of decorated video
@@ -121,8 +117,7 @@ const handleFormSubmit = function() {
 		event.preventDefault();
 		const searchTerm = $(event.currentTarget).find('#search-term');
 		console.log('submit has been clicked');
-		console.log(searchTerm.val());
-		fetchVideos(searchTerm,function(response){
+		fetchVideos(searchTerm.val(), function(response){
 			addVideosToStore(response);
 			render();
 		});
