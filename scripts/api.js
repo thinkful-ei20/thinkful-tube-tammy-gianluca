@@ -1,24 +1,20 @@
-
+/* global API_KEY */
 const api = (function(){
-
-	const API_KEY = 'AIzaSyAvFxw4hQ0lU1A53AlrPuFaegkd-RPIJcg';
-
 	const BASE_URL = 'https://www.googleapis.com/youtube/v3/search';
-
-	const fetchVideos = function(searchTerm, callback) {
-		let data = {'maxResults': '25',
-			'part': 'snippet',
-			'q': searchTerm,
-			'key': API_KEY,
+	const fetchVideos = function(query, callback) {
+		let data = {
+			maxResults: '25',
+			part: 'snippet',
+			key: API_KEY,
+			...query,
 		};
 		$.getJSON(BASE_URL, data, function(response) {
-			console.log(response);
 			callback(decorateResponse(response));
 		});
 	};
 
 	const decorateResponse = function(response) {
-		let pageTokens = [response.prevPageToken, response.nextPageToken];
+		let pagetokens = {prev:response.prevPageToken, next:response.nextPageToken};
 		let videos = response.items.map(item => {
 			let id = item.id.videoId;
 			let title = item.snippet.title;
@@ -36,7 +32,7 @@ const api = (function(){
 
 		return {
 			videos,
-			pageTokens,
+			pagetokens,
 		};
 	};
 

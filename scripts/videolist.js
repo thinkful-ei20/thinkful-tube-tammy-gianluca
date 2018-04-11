@@ -1,4 +1,4 @@
-/*global api, store */
+/* global api, store */
 
 const videoList = (function(){
 
@@ -21,33 +21,39 @@ const videoList = (function(){
 
 	const generatePageButtons = function(pageTokens){
 		let buttons = '';
-		if(pageTokens[0]) {
+		if(pageTokens.prev) {
 			buttons += '<a class=\'page-button prev\'href=#>prev</a>';
 		}
-		if(pageTokens[1]) {
+		if(pageTokens.next) {
 			buttons += '<a class=\'page-button next\' href=#>next</a>';
 		}
 		return buttons;
 	};
 
+	const apiHandler = function(query) {
+		api.fetchVideos(query, function(response){
+			store.setVideos(response.videos);
+			store.setPageTokens(response.pagetokens);
+			render();
+		});
+	};
+
 	const handleFormSubmit = function() {
 		$('form').submit(function(event){
 			event.preventDefault();
+			const query = {};
 			const searchTerm = $(event.currentTarget).find('#search-term');
-			store.setSearchTerm = searchTerm.val();
-			api.fetchVideos(store.searchTerm, function(response){
-				store.setVideos(response.videos);
-				store.setPageTokens(response.pageTokens);
-				console.log(store.pageTokens);
-				render();
-			});
+			query.q = searchTerm.val();
+			apiHandler(query);
 		});
 	};
 
 	const handlePageScroll = function() {
 		$('.controls').on('click', '.page-button', function(event) {
-			const text = $(event.target).text();
-			api.fetchVideos()
+			const query = {};
+			const pagetoken = $(event.target).text();
+			query.pageToken = pagetoken;
+			apiHandler(query);
 		});
 	};
 
@@ -58,10 +64,9 @@ const videoList = (function(){
 
 	const render = function(){
 		const items = store.videos;
-		const pageTokens = store.pageTokens;
+		const pagetokens = store.pagetokens;
 		const htmlString = generateVideoHtmlString(items);
-		const buttons = generatePageButtons(pageTokens);
-		console.log(buttons);
+		const buttons = generatePageButtons(pagetokens);
 		$('.results').html(htmlString);
 		$('.controls').html(buttons);
 	};
